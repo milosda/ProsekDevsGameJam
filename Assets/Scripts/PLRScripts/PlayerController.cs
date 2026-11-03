@@ -5,15 +5,11 @@ public class PlayerController : MonoBehaviour
 {
     public Movement GeneralMovementScript;
 
-    void Start()
-    {
-        
-    }
+    
 
     
     void Update()
     {
-        
-        
+        GeneralMovementScript.Move();
     }
 }
