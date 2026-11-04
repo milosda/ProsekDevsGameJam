@@ -354,7 +354,7 @@ GameObject:
   - component: {fileID: 1190937244}
   m_Layer: 0
   m_Name: Ground
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -695,11 +695,12 @@ MonoBehaviour:
   MovedObject: {fileID: 2137525070}
   CanMove: 1
   CanLook: 1
-  CanCrouch: 1
   MinMoveAcceleration: 5
   MaxMoveAcceleration: 10
   MaxAccelerationFinal: 2
+  MinJumpAcceleration: 5
   GravityAcceleration: 9.81
+  MinDeacceleration: 9.999
   CurrAcceleration: {x: 0, y: 0}
 --- !u!114 &2137525077
 MonoBehaviour:

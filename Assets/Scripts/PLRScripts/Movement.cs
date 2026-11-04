@@ -17,8 +17,8 @@ public class Movement : MonoBehaviour
     private bool PLRJumping;
 
     public float MinMoveAcceleration = 5f;
-    public float MaxMoveAcceleration = 10f;
-    public float MaxAccelerationFinal = 2;
+    public float MaxMoveAcceleration = 1f;
+    public float MaxCurrAcceleration = 3f;
     public float MinJumpAcceleration = 5f;
     public float GravityAcceleration = 1f;
     public float MinDeacceleration = 0.999f;
@@ -26,30 +26,50 @@ public class Movement : MonoBehaviour
 
 
 
-    public Vector2 CurrAcceleration;
+    
     private Vector2 Dir;
-    public Vector2 CurrMoveAcceleration { get; set; }
-    public Vector2 CurrAccelerationFinal { get; set; }
-    private Vector2 CurrVelocity;
 
-    private void CalculateMovementAcceleration() 
+    private Vector2 MoveAcceleration;
+    private float GravAcceleration;
+    public Vector2 OutsideAcceleration;
+    private Vector2 CurrAcceleration;
+
+
+    public Vector2 CurrVelocity;
+
+
+    private void CalculateMoveAcceleration()
     {
-        CurrMoveAcceleration += new Vector2(MinMoveAcceleration * Time.deltaTime, 0) * Dir;
-        CurrMoveAcceleration = new Vector2(Mathf.Clamp(CurrMoveAcceleration.x, -MaxMoveAcceleration, MaxMoveAcceleration),CurrMoveAcceleration.y);
+        MoveAcceleration += new Vector2(MinMoveAcceleration, 0) * Dir * Time.deltaTime;
+        MoveAcceleration = new Vector2(Mathf.Clamp(MoveAcceleration.x,-MaxMoveAcceleration,MaxCurrAcceleration), MoveAcceleration.y);
     }
 
-    private void CalculateFinalAcceleration() 
+    private void CalculateCurrAcceleration()
     {
-        CalculateMovementAcceleration();
-        CurrAccelerationFinal += (CurrAcceleration + CurrMoveAcceleration) * Time.deltaTime;
+        CalculateMoveAcceleration();
+        CurrAcceleration = (MoveAcceleration + OutsideAcceleration) * Time.deltaTime;
     }
 
-    private void CalculateCurrVelocity()
+
+    private void CalculateCurrVelocity() 
     {
-        CurrVelocity += CurrAccelerationFinal;
-        Rg2D.MovePosition(MovedObject.transform.position + new Vector3(CurrVelocity.x, Mathf.Clamp(CurrVelocity.y,-0.001f,0.001f), 0));
+        CalculateCurrAcceleration();
+        CurrVelocity += CurrAcceleration * Time.deltaTime;
+        Rg2D.MovePosition(MovedObject.transform.position + new Vector3(CurrVelocity.x, CurrVelocity.y, 0));
     }
 
+    private void DeAcceleration() 
+    {
+        CurrVelocity = new Vector2(CurrVelocity.x * 0.5f, ((PLRJumping == true) ? 0 : 1) * CurrVelocity.y);
+        CurrAcceleration = new Vector2(CurrAcceleration.x * Mathf.Clamp(CurrAcceleration.x / MaxCurrAcceleration, MaxDeacceleration, MinDeacceleration), ((PLRJumping == true) ? 0 : 1) * CurrAcceleration.y);
+        OutsideAcceleration = OutsideAcceleration * 0.8f * Time.deltaTime;
+        MoveAcceleration = new Vector2(MoveAcceleration.x * Mathf.Clamp(MoveAcceleration.x / MaxMoveAcceleration, MaxDeacceleration, MinDeacceleration), ((PLRJumping == true) ? 0 : 1) * CurrAcceleration.y);
+    
+    }
+
+
+    
+    /*
     private void DecreaseAllSpeedAndAcceleration() 
     {
         CurrVelocity = new Vector2(CurrVelocity.x * 0.1f, CurrVelocity.y); // rychlost by měla být měněna pomocí modifier systému, ale to je na potom
@@ -57,27 +77,17 @@ public class Movement : MonoBehaviour
         CurrMoveAcceleration = new Vector2(CurrMoveAcceleration.x * Mathf.Clamp(CurrMoveAcceleration.x / MaxMoveAcceleration, MaxDeacceleration, MinDeacceleration), CurrMoveAcceleration.y * 0.9f);
         CurrAccelerationFinal = new Vector2(CurrAccelerationFinal.x * Mathf.Clamp(CurrAccelerationFinal.x / MaxAccelerationFinal, MaxDeacceleration, MinDeacceleration), CurrAccelerationFinal.y * 0.9f);
     }
+    */
 
     private void Gravity() 
     {
-        Debug.Log(Grounded);
-        if (Grounded == false && PLRInputJump == false && LastFrameGrounded == false)
+       
+        if (Grounded == false && PLRJumping == false && LastFrameGrounded == false)
         {
-            CurrMoveAcceleration -= new Vector2(0, GravityAcceleration * Time.deltaTime);
-            Debug.Log("Gravity");
+            MoveAcceleration -= new Vector2(0, GravityAcceleration * Time.deltaTime);
         }
-        else if (Grounded == true && PLRInputJump == false && LastFrameGrounded == false) 
-        {
-            LastFrameGrounded = true;
-            CurrMoveAcceleration = new Vector2(CurrMoveAcceleration.x, 0);
-            Debug.Log("Grounded");
-        }
-        /*
-        else if (Grounded == true && PLRInputJump == false && LastFrameGrounded == true) 
-        {
-            tohle není potřeba ale je to tu pro mne protože jsem idiot a zapomínám jak tento kod funguje trust fr
-        }
-        */
+        
+        
     }
 
 
@@ -85,38 +95,46 @@ public class Movement : MonoBehaviour
     {
         RaycastHit2D raycast = Physics2D.Raycast(new Vector2(MovedObject.transform.position.x,MovedObject.transform.position.y - 0.51f), Vector2.down,0.2f);
 
-       
-        /*
-        if (raycast == null) 
+        if (raycast) 
         {
-            if (raycast.collider.gameObject.tag == "Ground")
+            if (raycast.collider.gameObject.tag == "Ground" && LastFrameGrounded == true) 
             {
-                Debug.Log("yay");
                 Grounded = true;
             }
+            else if (raycast.collider.gameObject.tag == "Ground")
+            {
+                LastFrameGrounded = true;
+                MoveAcceleration = new Vector2(MoveAcceleration.x, 0);
+                CurrVelocity = new Vector2 (CurrVelocity.x, 0);
+            }
         }
-        */
+        
     }
 
 
-
+    
     private void Jump() 
     {
+        
         if (PLRInputJump == true && Grounded == true) 
         {
             PLRJumping = true;
+            Grounded = false;
         }
         else if (PLRJumping == true) 
         {
-            CurrMoveAcceleration += new Vector2(0, MinJumpAcceleration * Time.deltaTime);
+            MoveAcceleration += new Vector2(0, MinJumpAcceleration * Time.deltaTime);
 
-            if (CurrMoveAcceleration.y > 0.8f) 
+            Debug.Log(CurrVelocity);
+            if (MoveAcceleration.y > 8f) 
             {
+
                 PLRJumping = false;
+                MoveAcceleration.y = 0;
             }
         }
     }
-
+    
 
 
     public void Move() 
@@ -127,23 +145,24 @@ public class Movement : MonoBehaviour
             PLRInputJump = Inputs.ReadJump();
         }
 
-        IsGrounded();
         Jump();
+        IsGrounded();
+        
         Gravity();
-        CalculateFinalAcceleration();
         CalculateCurrVelocity();
-        DecreaseAllSpeedAndAcceleration();
+        DeAcceleration();
 
+       
     }
 
     public bool IsMoving() 
     {
-        return (CurrAccelerationFinal.x > 0 || CurrAccelerationFinal.x < 0) ? true : false;
+        return (CurrAcceleration.x > 0 || CurrAcceleration.x < 0) ? true : false;
     }
 
     public bool IsRisingOrFalling() 
     {
-        return (CurrAccelerationFinal.y > 0 || CurrAccelerationFinal.y < 0) ? true : false;
+        return (CurrAcceleration.y > 0 || CurrAcceleration.y < 0) ? true : false;
     }
 
     public bool IsJumping()
@@ -156,10 +175,15 @@ public class Movement : MonoBehaviour
         Rg2D = GetComponent<Rigidbody2D>();
 
         CurrAcceleration = new Vector2(0, 0);
-        CurrMoveAcceleration = new Vector2(0, 0);
-        CurrAccelerationFinal = new Vector2(0, 0);
+        OutsideAcceleration = new Vector2(0, 0);
+        MoveAcceleration = new Vector2(0, 0);
 
         CurrVelocity = new Vector2(0, 0);
+
+        Grounded = false;
+        LastFrameGrounded = false;
+
+
 
         if (CanMove == true)
         {
