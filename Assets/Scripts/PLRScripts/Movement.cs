@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,194 +8,123 @@ public class Movement : MonoBehaviour
     public PlayerInput Inputs;
     public GameObject MovedObject;
     private Rigidbody2D Rg2D;
+    private BoxCollider2D Collider;
     
     public bool CanMove;
     public bool CanLook;
     
     public bool Grounded { get; set; }
-    public bool LastFrameGrounded { get; set; }
     private bool PLRInputJump;
     private bool PLRJumping;
-
-    public float MinMoveAcceleration = 5f;
-    public float MaxMoveAcceleration = 1f;
-    public float MaxCurrAcceleration = 3f;
-    public float MinJumpAcceleration = 5f;
-    public float GravityAcceleration = 1f;
-    public float MinDeacceleration = 0.999f;
-    private float MaxDeacceleration = 0.9f;
-
-
-
-    
     private Vector2 Dir;
 
-    private Vector2 MoveAcceleration;
-    private float GravAcceleration;
-    public Vector2 OutsideAcceleration;
-    private Vector2 CurrAcceleration;
-
-
-    public Vector2 CurrVelocity;
-
-
-    private void CalculateMoveAcceleration()
-    {
-        MoveAcceleration += new Vector2(MinMoveAcceleration, 0) * Dir * Time.deltaTime;
-        MoveAcceleration = new Vector2(Mathf.Clamp(MoveAcceleration.x,-MaxMoveAcceleration,MaxCurrAcceleration), MoveAcceleration.y);
-    }
-
-    private void CalculateCurrAcceleration()
-    {
-        CalculateMoveAcceleration();
-        CurrAcceleration = (MoveAcceleration + OutsideAcceleration) * Time.deltaTime;
-    }
-
-
-    private void CalculateCurrVelocity() 
-    {
-        CalculateCurrAcceleration();
-        CurrVelocity += CurrAcceleration * Time.deltaTime;
-        Rg2D.MovePosition(MovedObject.transform.position + new Vector3(CurrVelocity.x, CurrVelocity.y, 0));
-    }
-
-    private void DeAcceleration() 
-    {
-        CurrVelocity = new Vector2(CurrVelocity.x * 0.5f, ((PLRJumping == true) ? 0 : 1) * CurrVelocity.y);
-        CurrAcceleration = new Vector2(CurrAcceleration.x * Mathf.Clamp(CurrAcceleration.x / MaxCurrAcceleration, MaxDeacceleration, MinDeacceleration), ((PLRJumping == true) ? 0 : 1) * CurrAcceleration.y);
-        OutsideAcceleration = OutsideAcceleration * 0.8f * Time.deltaTime;
-        MoveAcceleration = new Vector2(MoveAcceleration.x * Mathf.Clamp(MoveAcceleration.x / MaxMoveAcceleration, MaxDeacceleration, MinDeacceleration), ((PLRJumping == true) ? 0 : 1) * CurrAcceleration.y);
-    
-    }
+    public float MinAcceleration = 8f;
+    private float ChangingDirAcceleration = 30f;
+    private float MaxMoveVelocity = 40f;
+    public float JumpForce = 100f;
 
 
     
-    /*
-    private void DecreaseAllSpeedAndAcceleration() 
+    private void Move()
     {
-        CurrVelocity = new Vector2(CurrVelocity.x * 0.1f, CurrVelocity.y); // rychlost by měla být měněna pomocí modifier systému, ale to je na potom
-        CurrAcceleration = new Vector2(CurrAcceleration.x * 0.1f, CurrAcceleration.y * 0.8f);
-        CurrMoveAcceleration = new Vector2(CurrMoveAcceleration.x * Mathf.Clamp(CurrMoveAcceleration.x / MaxMoveAcceleration, MaxDeacceleration, MinDeacceleration), CurrMoveAcceleration.y * 0.9f);
-        CurrAccelerationFinal = new Vector2(CurrAccelerationFinal.x * Mathf.Clamp(CurrAccelerationFinal.x / MaxAccelerationFinal, MaxDeacceleration, MinDeacceleration), CurrAccelerationFinal.y * 0.9f);
-    }
-    */
-
-    private void Gravity() 
-    {
-       
-        if (Grounded == false && PLRJumping == false && LastFrameGrounded == false)
+        if (Dir.x != Rg2D.linearVelocity.x / Mathf.Abs(Rg2D.linearVelocity.x) && Dir.x != 0) 
         {
-            MoveAcceleration -= new Vector2(0, GravityAcceleration * Time.deltaTime);
+            Rg2D.AddForce(Dir * new Vector2(ChangingDirAcceleration*Mathf.Abs(((MinAcceleration+Rg2D.linearVelocityX)/MaxMoveVelocity)),0),ForceMode2D.Impulse); //kdyžtak dotweakovat movement kk?
+        }
+
+
+        if (Rg2D.linearVelocityX < MaxMoveVelocity) 
+        {
+            Rg2D.AddForce(Dir * MinAcceleration);
+            
         }
         
-        
     }
 
+    private void Jump() 
+    {
+        if (Grounded == true && PLRInputJump == true && PLRJumping == false) 
+        {
+            PLRJumping = true;
+            Rg2D.AddForce(Vector2.up * JumpForce,ForceMode2D.Impulse);
+
+
+
+        }
+    }
 
     private void IsGrounded() 
     {
-        RaycastHit2D raycast = Physics2D.Raycast(new Vector2(MovedObject.transform.position.x,MovedObject.transform.position.y - 0.51f), Vector2.down,0.2f);
+        RaycastHit2D Raycast = Physics2D.Raycast(new Vector2(MovedObject.transform.position.x + Collider.size.x / 1.8f, MovedObject.transform.position.y - Collider.size.y / 1.8f), Vector2.down,0.2f);
+        RaycastHit2D Raycast2 = Physics2D.Raycast(new Vector2(MovedObject.transform.position.x - Collider.size.x / 1.8f, MovedObject.transform.position.y - Collider.size.y / 1.8f), Vector2.down,0.2f);
 
-        if (raycast) 
+
+        
+
+        
+
+        if (Raycast) 
         {
-            if (raycast.collider.gameObject.tag == "Ground" && LastFrameGrounded == true) 
+            if (Raycast.collider.gameObject.tag == "Ground" ) 
             {
                 Grounded = true;
-            }
-            else if (raycast.collider.gameObject.tag == "Ground")
-            {
-                LastFrameGrounded = true;
-                MoveAcceleration = new Vector2(MoveAcceleration.x, 0);
-                CurrVelocity = new Vector2 (CurrVelocity.x, 0);
-            }
-        }
-        
-    }
-
-
-    
-    private void Jump() 
-    {
-        
-        if (PLRInputJump == true && Grounded == true) 
-        {
-            PLRJumping = true;
-            Grounded = false;
-        }
-        else if (PLRJumping == true) 
-        {
-            MoveAcceleration += new Vector2(0, MinJumpAcceleration * Time.deltaTime);
-
-            Debug.Log(CurrVelocity);
-            if (MoveAcceleration.y > 8f) 
-            {
-
                 PLRJumping = false;
-                MoveAcceleration.y = 0;
             }
+            return;
         }
-    }
-    
 
-
-    public void Move() 
-    {
-        if (CanMove == true) 
+        if (Raycast2) 
         {
-            Dir = Inputs.ReadPlrInput();
-            PLRInputJump = Inputs.ReadJump();
+            if (Raycast2.collider.gameObject.tag == "Ground") 
+            {
+                Grounded = true;
+                PLRJumping = false;
+            }
+            return;
         }
 
-        Jump();
-        IsGrounded();
-        
-        Gravity();
-        CalculateCurrVelocity();
-        DeAcceleration();
-
-       
+        Grounded = false;
     }
 
-    public bool IsMoving() 
-    {
-        return (CurrAcceleration.x > 0 || CurrAcceleration.x < 0) ? true : false;
-    }
-
-    public bool IsRisingOrFalling() 
-    {
-        return (CurrAcceleration.y > 0 || CurrAcceleration.y < 0) ? true : false;
-    }
-
-    public bool IsJumping()
-    {
-        return PLRJumping;
-    }
 
     private void Awake()
     {
         Rg2D = GetComponent<Rigidbody2D>();
-
-        CurrAcceleration = new Vector2(0, 0);
-        OutsideAcceleration = new Vector2(0, 0);
-        MoveAcceleration = new Vector2(0, 0);
-
-        CurrVelocity = new Vector2(0, 0);
-
-        Grounded = false;
-        LastFrameGrounded = false;
-
-
+        Collider = GetComponent<BoxCollider2D>();
 
         if (CanMove == true)
         {
             Dir = Inputs.ReadPlrInput();
             PLRInputJump = Inputs.ReadJump();
         }
-        
-        
     }
 
-    
+
+    private void Update()
+    {
+        if (CanMove == true)
+        {
+            Dir = Inputs.ReadPlrInput();
+            PLRInputJump = Inputs.ReadJump();
+        }
+    }
+
+
+
+
+    private void FixedUpdate()
+    {
+        
+        Debug.Log(Grounded);
+        Debug.Log(PLRInputJump);
+        Debug.Log(PLRJumping);
+        
+
+        IsGrounded();
+        Move();
+        Jump();
+
+    }
 
 
 

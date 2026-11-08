@@ -5,11 +5,8 @@ public class PlayerController : MonoBehaviour
 {
     public Movement GeneralMovementScript;
 
-    
-
-    
     void Update()
     {
-        GeneralMovementScript.Move();
+       
     }
 }
