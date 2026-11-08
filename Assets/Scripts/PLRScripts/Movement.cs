@@ -16,12 +16,18 @@ public class Movement : MonoBehaviour
     public bool Grounded { get; set; }
     private bool PLRInputJump;
     private bool PLRJumping;
+    private bool PLRInputDash;
+    private bool PLRDashing;
+
     private Vector2 Dir;
+    private Vector2 FacingDir;
 
     public float MinAcceleration = 8f;
     private float ChangingDirAcceleration = 30f;
     private float MaxMoveVelocity = 40f;
     public float JumpForce = 100f;
+    public float DashForce = 50f;
+    private float DashCooldown = 4f;
 
 
     
@@ -52,6 +58,36 @@ public class Movement : MonoBehaviour
 
         }
     }
+
+    private void PLRFaceDir()
+    {
+        if (Dir.x == 1) 
+        {
+            FacingDir = Vector2.right;
+        }
+        else if (Dir.x == -1)
+        {
+            FacingDir = Vector2.left;
+        }
+    }
+
+    private void Dash() 
+    {
+        DashCooldown -= Time.deltaTime;
+
+        Debug.Log(DashCooldown);
+        Debug.Log(PLRInputDash);
+
+
+        if (DashCooldown <= 0 && PLRInputDash == true)
+        {
+            
+            Rg2D.AddForce(FacingDir * DashForce, ForceMode2D.Impulse);
+            DashCooldown = 4f;
+        }
+
+    }
+
 
     private void IsGrounded() 
     {
@@ -92,10 +128,14 @@ public class Movement : MonoBehaviour
         Rg2D = GetComponent<Rigidbody2D>();
         Collider = GetComponent<BoxCollider2D>();
 
+
+
+
         if (CanMove == true)
         {
             Dir = Inputs.ReadPlrInput();
             PLRInputJump = Inputs.ReadJump();
+            FacingDir = Vector2.right;
         }
     }
 
@@ -106,6 +146,8 @@ public class Movement : MonoBehaviour
         {
             Dir = Inputs.ReadPlrInput();
             PLRInputJump = Inputs.ReadJump();
+            PLRInputDash = Inputs.ReadDash();
+            PLRFaceDir();
         }
     }
 
@@ -114,15 +156,10 @@ public class Movement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        
-        Debug.Log(Grounded);
-        Debug.Log(PLRInputJump);
-        Debug.Log(PLRJumping);
-        
-
         IsGrounded();
         Move();
         Jump();
+        Dash();
 
     }
 
