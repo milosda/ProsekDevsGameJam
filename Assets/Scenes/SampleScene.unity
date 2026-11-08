@@ -696,6 +696,7 @@ MonoBehaviour:
   CanLook: 1
   MinAcceleration: 9
   JumpForce: 2
+  DashForce: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
