@@ -9,6 +9,7 @@ public class Movement : MonoBehaviour
     public GameObject MovedObject;
     private Rigidbody2D Rg2D;
     private BoxCollider2D Collider;
+    private PlayerState PlayerStateScript;
     
     public bool CanMove;
     public bool CanLook;
@@ -74,11 +75,6 @@ public class Movement : MonoBehaviour
     private void Dash() 
     {
         DashCooldown -= Time.deltaTime;
-
-        Debug.Log(DashCooldown);
-        Debug.Log(PLRInputDash);
-
-
         if (DashCooldown <= 0 && PLRInputDash == true)
         {
             
@@ -127,11 +123,11 @@ public class Movement : MonoBehaviour
     {
         Rg2D = GetComponent<Rigidbody2D>();
         Collider = GetComponent<BoxCollider2D>();
+        PlayerStateScript = GetComponent<PlayerState>();
 
 
 
-
-        if (CanMove == true)
+        if (CanMove == true && PlayerStateScript.PLRState == "Alive")
         {
             Dir = Inputs.ReadPlrInput();
             PLRInputJump = Inputs.ReadJump();
@@ -142,7 +138,7 @@ public class Movement : MonoBehaviour
 
     private void Update()
     {
-        if (CanMove == true)
+        if (CanMove == true && PlayerStateScript.PLRState == "Alive")
         {
             Dir = Inputs.ReadPlrInput();
             PLRInputJump = Inputs.ReadJump();
