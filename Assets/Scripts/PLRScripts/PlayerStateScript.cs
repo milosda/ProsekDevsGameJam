@@ -7,17 +7,15 @@ public class PlayerState : MonoBehaviour
 
     public static event Action<string> OnPlayerStateChanged;
 
-    public static PlayerState PlayerStateScript = null;
+    
 
 
 
     private void Awake()
     {
-        PlayerStateScript = this;
+        PLRState = "Alive";
 
-        PlayerStateScript.PLRState = "Alive";
-
-        PlayerStateScript.OnPlayerStateChanged += ChangePlayerState;
+        
 
     }
 
