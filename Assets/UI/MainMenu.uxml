@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/Styles/MainMenuStyle.uss?fileID=7433441132597879392&amp;guid=f6db14aa1dcf1ae4d87b7a49ed272dae&amp;type=3#MainMenuStyle"/>
-    <ui:VisualElement name="Root" class="Root" style="flex-grow: 1; -unity-background-image-tint-color: rgb(0, 0, 0);">
+    <ui:VisualElement name="Root" class="Root" style="flex-grow: 1; -unity-background-image-tint-color: rgb(255, 255, 255); background-image: url(&quot;project://database/Assets/Art/New%20Piskel.png?fileID=2800000&amp;guid=1c77479ab0baafb49bf834b44e206e3e&amp;type=3#New Piskel&quot;); background-color: rgb(255, 255, 255);">
         <ui:VisualElement name="TitleAndButtonsMainDiv" class="TitleAndButtonsMainDiv" style="flex-grow: 1;">
             <ui:VisualElement name="TitleDiv" class="TitleDiv" style="flex-grow: 1;">
                 <ui:Label text="Dead Running" name="Title" class="Title" style="-unity-text-generator: advanced; -unity-text-auto-size: none;"/>
