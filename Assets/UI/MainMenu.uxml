@@ -1,5 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/Styles/MainMenuStyle.uss?fileID=7433441132597879392&amp;guid=f6db14aa1dcf1ae4d87b7a49ed272dae&amp;type=3#MainMenuStyle"/>
+    <Style src="project://database/Assets/UI/Styles/LevelSelectStyle.uss?fileID=7433441132597879392&amp;guid=80edb10e78d99cd448b20669e97e27e6&amp;type=3#LevelSelectStyle"/>
     <ui:VisualElement name="Root" class="Root" style="flex-grow: 1; -unity-background-image-tint-color: rgb(255, 255, 255); background-image: url(&quot;project://database/Assets/Art/New%20Piskel.png?fileID=2800000&amp;guid=1c77479ab0baafb49bf834b44e206e3e&amp;type=3#New Piskel&quot;); background-color: rgb(255, 255, 255);">
         <ui:VisualElement name="TitleAndButtonsMainDiv" class="TitleAndButtonsMainDiv" style="flex-grow: 1;">
             <ui:VisualElement name="TitleDiv" class="TitleDiv" style="flex-grow: 1;">
@@ -10,16 +11,22 @@
                     <ui:VisualElement name="LineDiv" class="LineDiv" style="flex-grow: 1;">
                         <ui:Image source="project://database/Assets/Art/ButtonLine.png?fileID=2800000&amp;guid=2ec815f17379b2c40b869a2fa7b7659a&amp;type=3#ButtonLine" tint-color="rgb(0, 255, 6)"/>
                     </ui:VisualElement>
-                    <ui:Button text="Button" class="Button" style="background-color: rgb(188, 188, 188); -unity-background-image-tint-color: rgb(255, 255, 255);"/>
+                    <ui:VisualElement class="DivInButtonDiv" style="flex-grow: 1;">
+                        <ui:Label text="Play" name="Label" class="ButtonText" style="margin-left: 0; padding-left: 0; padding-top: 0; margin-top: 0; padding-right: 0; margin-right: 0; margin-bottom: 0; padding-bottom: 0;"/>
+                        <ui:Button text="Button" name="Play" class="Button" style="background-color: rgb(188, 188, 188); -unity-background-image-tint-color: rgb(255, 255, 255);"/>
+                    </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="QuitButtonDiv" class="ButtonDiv" style="flex-grow: 0;">
                     <ui:VisualElement name="LineDiv" class="LineDiv" style="flex-grow: 1;">
                         <ui:Image name="Image" source="project://database/Assets/Art/ButtonLine.png?fileID=2800000&amp;guid=2ec815f17379b2c40b869a2fa7b7659a&amp;type=3#ButtonLine"/>
                     </ui:VisualElement>
-                    <ui:Button text="Button" display-tooltip-when-elided="false" class="Button"/>
+                    <ui:VisualElement class="DivInButtonDiv" style="flex-grow: 1;">
+                        <ui:Button text="Button" display-tooltip-when-elided="false" name="Quit" class="Button"/>
+                        <ui:Label text="Quit" name="Label" class="ButtonText" style="margin-top: 0; padding-top: 0; padding-bottom: 0; padding-right: 0; margin-right: 0; margin-bottom: 0; padding-left: 0; margin-left: 0%;"/>
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="AmpuleDiv" class="AmpuleDiv" style="flex-grow: 1;"/>
+        <ui:VisualElement name="AmpuleDiv" class="AmpuleDiv" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Art/Ampule.png?fileID=2800000&amp;guid=2fc4d84bcc7718947b7c99c6aa04b86c&amp;type=3#Ampule&quot;);"/>
     </ui:VisualElement>
 </ui:UXML>

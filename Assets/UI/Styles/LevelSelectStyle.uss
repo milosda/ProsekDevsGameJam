@@ -1,0 +1,46 @@
+:root {
+}
+
+.Root {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    align-self: center;
+    align-content: auto;
+    background-image: url("project://database/Assets/Art/New%20Piskel.png?fileID=2800000&guid=1c77479ab0baafb49bf834b44e206e3e&type=3#New Piskel");
+}
+
+.LevelDiv {
+    height: 80px;
+    width: 80px;
+    margin-top: 8%;
+    top: auto;
+    bottom: auto;
+    margin-left: 12px;
+    margin-right: 12px;
+    margin-bottom: 0;
+    justify-content: space-evenly;
+    align-items: center;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    align-content: auto;
+    align-self: stretch;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    flex-basis: auto;
+    background-color: rgba(0, 0, 0, 0);
+    background-position-x: center;
+}
+
+.LevelTest {
+    -unity-font-definition: url("project://database/Assets/Fonts/PixelatedEleganceRegular-ovawB.ttf?fileID=12800000&guid=3d25019246d00f1409d9a6661339f55c&type=3#PixelatedEleganceRegular-ovawB");
+    color: rgb(194, 229, 130);
+    margin-top: 0%;
+}
